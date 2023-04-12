@@ -99,7 +99,7 @@ fn sats_from_tsv(
       })?;
 
       needles.push((sat, value));
-    }
+    }    
   }
   needles.sort();
 
