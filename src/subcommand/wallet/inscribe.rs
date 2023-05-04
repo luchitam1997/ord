@@ -186,10 +186,11 @@ impl Inscribe {
         None => [get_change_address(&client)?, get_change_address(&client)?]
     };
     
-    let reveal_tx_destination = self
-      .destination
-      .map(Ok)
-      .unwrap_or_else(|| get_change_address(&client))?;
+    // let reveal_tx_destination =if self.destination.is_empty() {
+    //   self.destination[0]
+    // } else {
+    //   (get_change_address(&client))?
+    // };
 
     tprintln!("[create_inscription_transactions]");
     let (satpoint, unsigned_commit_tx, reveal_txs, recovery_key_pairs) =
