@@ -104,6 +104,8 @@ pub(crate) struct Inscribe {
     help = "Location of a CSV file to use for a combination of DESTINATION and FILE NAMES.  Should be structured `destination,file`."
   )]
   pub(crate) csv: Option<PathBuf>,
+  #[clap(long, help = "Use --address-contain to select the address containing the dust remain")]
+  pub(crate) address_contain: Option<Address>,
 }
 
 impl Inscribe {
@@ -179,7 +181,15 @@ impl Inscribe {
 
     let inscriptions = index.get_inscriptions(None)?;
 
-    let commit_tx_change = [get_change_address(&client)?, get_change_address(&client)?];
+    let commit_tx_change = match self.address_contain {
+        Some(address) =>  [get_change_address(&client)?,address],
+        None => [get_change_address(&client)?, get_change_address(&client)?]
+    };
+    
+    let reveal_tx_destination = self
+      .destination
+      .map(Ok)
+      .unwrap_or_else(|| get_change_address(&client))?;
 
     tprintln!("[create_inscription_transactions]");
     let (satpoint, unsigned_commit_tx, reveal_txs, recovery_key_pairs) =
